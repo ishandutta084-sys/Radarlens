@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Event viewer - RadarLens</title>
+  <meta name="description" content="Compare NISAR radar images from before and after an event, with the change measured.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <!-- Page-specific styles. Uses the colour tokens from style.css.
+       Can be moved into style.css later if you prefer one file. -->
+  <style>
+    .page-head { padding-block: 40px 8px; }
+    .page-head h1 { font-size: clamp(28px, 4vw, 38px); font-weight: 800; line-height: 1.15; letter-spacing: -.01em; }
+    .page-head p { margin-top: 8px; max-width: 60ch; }
+
+    .viewer-section { padding-block: 24px 0; }
+    .viewer-section:last-of-type { padding-bottom: 56px; }
+    .viewer-section h2 { font-size: 19px; font-weight: 800; margin-bottom: 8px; }
+
+    /* ---------- event switcher ---------- */
+    .event-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+    .tab {
+      font: 600 15px/1 var(--font);
+      padding: 12px 20px;
+      border-radius: 99px;
+      border: 2px solid var(--accent);
+      background: transparent;
+      color: var(--accent);
+      cursor: pointer;
+      transition: background .2s, color .2s;
+    }
+    .tab:hover { background: rgba(27, 108, 168, .1); }
+    .tab[aria-pressed="true"] { background: var(--accent); color: #fff; }
+
+    /* ---------- status messages (loading / error) ---------- */
+    .status {
+      margin-top: 16px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--card);
+      color: var(--muted);
+    }
+    .status[hidden] { display: none; }
+    .status.is-error { border-left: 4px solid var(--accent); color: var(--text); }
+    .status .btn { margin-top: 12px; padding: 10px 20px; font-size: 15px; background: transparent; cursor: pointer; }
+
+    /* ---------- headline ---------- */
+    .headline { margin-top: 24px; }
+    .headline h2 { font-size: clamp(22px, 3vw, 28px); font-weight: 800; line-height: 1.2; margin: 8px 0 0; }
+    .headline p { margin-top: 4px; }
+
+    /* ---------- before / after slider (PLACEHOLDER) ---------- */
+    .compare-block { margin-top: 16px; }
+    .compare {
+      --pos: 50%;                      /* Frontend 2: update this from the slider value */
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 16 / 9;
+      min-height: 240px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: #1d2c3d;
+      touch-action: pan-y;
+    }
+    .compare .layer {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 16px;
+      color: #cfd9ee;
+      font-size: 15px;
+    }
+    .compare .layer img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .compare .layer-before { background: #26405f; }
+    .compare .layer-after  { background: #1b2e46; clip-path: inset(0 0 0 var(--pos)); }
+    .compare .layer span { position: relative; }
+
+    .tag {
+      position: absolute;
+      top: 12px;
+      z-index: 3;
+      padding: 2px 12px;
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 600;
+      background: rgba(15, 31, 58, .85);
+      color: #fff;
+    }
+    .tag-before { left: 12px; }
+    .tag-after  { right: 12px; }
+
+    .handle {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: var(--pos);
+      width: 3px;
+      margin-left: -1.5px;
+      z-index: 2;
+      background: #fff;
+      pointer-events: none;
+    }
+    .handle::after {
+      content: "\2194";                 /* left-right arrow */
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 48px;                      /* big enough for a thumb */
+      height: 48px;
+      transform: translate(-50%, -50%);
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: #fff;
+      color: var(--navy);
+      font-size: 22px;
+      font-weight: 800;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .35);
+    }
+
+    /* Invisible range input that will drive the slider. Frontend 2: wire it up. */
+    .compare input[type="range"] {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      opacity: 0;
+      cursor: ew-resize;
+      z-index: 4;
+    }
+    .compare:focus-within { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+    .img-label { margin-top: 8px; font-size: 13px; color: var(--muted); }
+
+    .toggle-row { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 15px; }
+    .toggle-row input { width: 20px; height: 20px; accent-color: var(--accent); }
+
+    .change-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(217, 100, 15, 0.45);
+      mix-blend-mode: screen;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .25s ease;
+      z-index: 2;
+    }
+    .change-overlay.is-active { opacity: 1; }
+
+    /* ---------- stats + explainer ---------- */
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+    .panel h3 { font-size: 16px; font-weight: 800; }
+    .panel > .muted { margin-top: 4px; font-size: 15px; }
+
+    .stat { margin-top: 16px; }
+    .stat-num { font-size: clamp(32px, 5vw, 44px); font-weight: 800; line-height: 1.1; letter-spacing: -.01em; }
+    .stat-label { font-size: 13px; font-weight: 600; color: var(--muted); }
+    .bar-track { margin-top: 8px; height: 12px; border-radius: 99px; background: var(--bg); border: 1px solid var(--line); overflow: hidden; }
+    .bar-fill { height: 100%; width: 0; border-radius: 99px; }
+    .bar-before { background: var(--accent); width: 40%; }   /* Frontend 2: set width from API value */
+    .bar-after  { background: var(--flood);  width: 70%; }   /* Frontend 2: set width from API value */
+    .stat-meta { margin-top: 12px; font-size: 13px; color: var(--muted); }
+
+    .legend { margin: 12px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; font-size: 15px; color: var(--muted); }
+    .legend li { display: flex; align-items: center; gap: 8px; }
+    .swatch { flex: none; width: 20px; height: 20px; border-radius: 6px; border: 1px solid var(--line); }
+    .sw-dark   { background: #0b1220; }
+    .sw-mid    { background: #6d7a8c; }
+    .sw-bright { background: #f2f5f9; }
+
+    .explain-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 16px;
+      font: 600 15px/1 var(--font);
+      padding: 12px 20px;
+      border-radius: 99px;
+      border: 2px solid var(--accent);
+      background: transparent;
+      color: var(--accent);
+      cursor: pointer;
+    }
+    .explain-btn[aria-expanded="true"] { background: var(--accent); color: #fff; }
+    .explain-body { margin-top: 12px; padding: 12px; border-radius: 10px; background: var(--bg); border: 1px solid var(--line); color: var(--muted); font-size: 15px; }
+    .explain-body[hidden] { display: none; }
+    .explain-body p + p { margin-top: 8px; }
+
+    /* ---------- radar vs camera ---------- */
+    .side-by-side {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .side-by-side figure { margin: 0; }
+    .ph-img {
+      aspect-ratio: 4 / 3;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 16px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: #26405f;
+      color: #cfd9ee;
+      font-size: 15px;
+      overflow: hidden;
+    }
+    .ph-img img { width: 100%; height: 100%; object-fit: cover; }
+    .side-by-side figcaption { margin-top: 8px; font-size: 15px; color: var(--muted); }
+    .side-by-side figcaption b { display: block; color: var(--text); font-size: 16px; }
+    .side-by-side figcaption small { display: block; margin-top: 2px; font-size: 13px; }
+
+    /* ---------- map (Leaflet + GIBS) ---------- */
+    #map {
+      margin-top: 16px;
+      min-height: 320px;
+      width: 100%;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: var(--card);
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    /* ---------- notes ---------- */
+    .notes { margin: 16px 0 0; padding: 0; list-style: none; display: grid; gap: 12px; }
+    .notes li { padding-left: 16px; position: relative; color: var(--muted); font-size: 15px; }
+    .notes li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: .6em;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+    .notes b { color: var(--text); }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+    .actions .btn { margin: 0; }
+  </style>
+</head>
+<body>
+
+  <header class="top">
+    <div class="wrap bar">
+      <a class="brand" href="index.html" aria-label="RadarLens home">
+        <svg class="logo" viewBox="0 0 32 32" width="30" height="30" aria-hidden="true">
+          <path class="l-sweep" d="M16 16 L16 2 A14 14 0 0 1 28.12 9 Z" fill="currentColor"/>
+          <circle class="l-ring" cx="16" cy="16" r="14" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="6 4"/>
+          <circle class="l-mid" cx="16" cy="16" r="8" fill="none" stroke="currentColor" stroke-width="2"/>
+          <circle class="l-ping" cx="16" cy="16" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+        RadarLens
+      </a>
+
+      <nav aria-label="Main">
+        <a href="index.html">Home</a>
+        <a href="viewer.html" aria-current="page">Event viewer</a>
+        <a href="how-sar.html">How SAR works</a>
+        <a href="data.html">Data sources</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+
+      <div class="page-head">
+        <h1>Event viewer</h1>
+        <p class="muted">Drag the handle to compare radar images from before and after.</p>
+
+        <!-- Event switcher. The home page cards can link here with #flood, #glacier or #wetland. -->
+        <div class="event-tabs" role="group" aria-label="Choose an event">
+          <button class="tab" type="button" data-event="flood"   aria-pressed="true">Flood</button>
+          <button class="tab" type="button" data-event="glacier" aria-pressed="false">Glacier</button>
+          <button class="tab" type="button" data-event="wetland" aria-pressed="false">Wetland</button>
+        </div>
+
+        <!-- Loading and error messages. Frontend 2: show/hide these around the API call. -->
+        <div id="status-loading" class="status" role="status" hidden>Loading radar images…</div>
+        <div id="status-error" class="status is-error" role="alert" hidden>
+          <span>We couldn’t reach the data server. Check your connection and try again.</span><br>
+          <button class="btn btn-ghost" type="button" id="retry-btn">Try again</button>
+        </div>
+
+        <!-- One-line headline for the selected event -->
+        <div class="headline">
+          <span class="chip chip-flood" id="event-chip">Flood</span>
+          <!-- EDIT / API: headline text for each event -->
+          <h2 id="event-headline">Water covered more land after the flood</h2>
+          <p class="muted" id="event-why-matters">Why it matters: add one line on who benefits, such as farmers or emergency teams.</p>
+        </div>
+      </div>
+
+      <!-- ========== BEFORE / AFTER SLIDER ========== -->
+      <section class="viewer-section compare-block" aria-labelledby="slider-h">
+        <h2 id="slider-h" class="sr-only" style="position:absolute;left:-9999px">Before and after comparison</h2>
+
+        <!-- PLACEHOLDER: Frontend 2 builds the slider here.
+             - Replace the two .layer divs with <img> tags from the API (before / after).
+             - Wire the range input: on "input", set --pos on .compare to the value + "%".
+             - Keep arrow-key support, so the slider works without a mouse. -->
+        <div class="compare" id="compare">
+          <div class="layer layer-before">
+            <img id="img-before" src="images/flood-before.jpg" alt="Radar image before the event">
+          </div>
+          <div class="layer layer-after" id="layer-after">
+            <img id="img-after" src="images/flood-after.jpg" alt="Radar image after the event">
+            <div class="change-overlay" id="change-overlay" aria-hidden="true"></div>
+          </div>
+
+          <span class="tag tag-before">Before</span>
+          <span class="tag tag-after">After</span>
+          <div class="handle" aria-hidden="true"></div>
+
+          <input type="range" id="compare-range" min="0" max="100" value="50" step="1"
+                 aria-label="Drag to compare before and after radar images">
+        </div>
+
+        <!-- Label every image: source, date, satellite. API fills these in. -->
+        <p class="img-label" id="compare-label">
+          Source: NASA-ISRO NISAR · Before: add date · After: add date · Satellite: NISAR (L-band) · <span id="gap-days">add</span> days apart
+        </p>
+
+        <!-- PLACEHOLDER: change-highlight toggle. Frontend 2 shows the changed area on the After image. -->
+        <label class="toggle-row">
+          <input type="checkbox" id="highlight-toggle">
+          Highlight the changed area
+        </label>
+      </section>
+
+      <!-- ========== STATS + EXPLAINER ========== -->
+      <section class="viewer-section" aria-label="Change numbers and explanation">
+        <div class="two-col">
+
+          <article class="panel" aria-labelledby="stats-h">
+            <h3 id="stats-h">How much changed</h3>
+            <p class="muted" id="stats-unit">Share of the study area covered by water</p>
+
+            <!-- PLACEHOLDER: numbers and bar widths come from the API -->
+            <div class="stat">
+              <div class="stat-label">Before</div>
+              <div class="stat-num" id="stat-before">--</div>
+              <div class="bar-track" aria-hidden="true"><div class="bar-fill bar-before" id="bar-before"></div></div>
+            </div>
+
+            <div class="stat">
+              <div class="stat-label">After</div>
+              <div class="stat-num" id="stat-after">--</div>
+              <div class="bar-track" aria-hidden="true"><div class="bar-fill bar-after" id="bar-after"></div></div>
+            </div>
+
+            <p class="stat-meta">Estimate. Edges may be off. <a href="data.html">See the limits</a>.</p>
+          </article>
+
+          <article class="panel" aria-labelledby="read-h">
+            <h3 id="read-h">Reading the radar</h3>
+            <p class="muted">What the brightness means.</p>
+
+            <ul class="legend">
+              <li><i class="swatch sw-dark"></i> Dark: smooth water, very little signal returns</li>
+              <li><i class="swatch sw-mid"></i> Grey: crops, grass and rough ground</li>
+              <li><i class="swatch sw-bright"></i> Bright: buildings and rock, a lot returns</li>
+            </ul>
+
+            <button class="explain-btn" type="button" id="explain-btn" aria-expanded="false" aria-controls="explain-body">
+              What am I looking at?
+            </button>
+            <div class="explain-body" id="explain-body" hidden>
+              <!-- EDIT: Presenter 1 writes the final text, two or three lines -->
+              <p>These are radar images, not photos. The satellite sends radio waves down and records what bounces back.</p>
+              <p>Slide the handle to see the same place before and after. Dark patches that grow show where water spread.</p>
+            </div>
+
+            <ul class="notes">
+              <li><b>Why radar helped here.</b> <span id="why-radar">Add one line, such as: clouds covered this area, so a normal camera could not see it.</span></li>
+            </ul>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ========== RADAR VS NORMAL CAMERA ========== -->
+      <section class="viewer-section" aria-labelledby="vs-h">
+        <h2 id="vs-h">Radar vs a normal camera</h2>
+
+        <div class="side-by-side">
+          <figure>
+            <div class="ph-img">
+              <img id="img-radar" src="images/flood-radar.jpg" alt="Radar view of the study area">
+            </div>
+            <figcaption>
+              <b>Radar</b>
+              Sees the ground through cloud.
+              <small id="radar-caption">Source: Copernicus Sentinel-1 · Satellite: C-band SAR</small>
+            </figcaption>
+          </figure>
+
+          <figure>
+            <div class="ph-img">
+              <img id="img-optical" src="images/flood-optical.jpg" alt="Normal camera view of the same area">
+            </div>
+            <figcaption>
+              <b>Normal camera</b>
+              Blocked by cloud in the same place.
+              <small id="optical-caption">Source: Copernicus Sentinel-2 · Satellite: Optical MSI</small>
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <!-- ========== MAP ========== -->
+      <section class="viewer-section" aria-labelledby="map-h">
+        <h2 id="map-h">Where is this?</h2>
+
+        <div id="map" role="region" aria-label="Interactive map of the study area"></div>
+        <p class="img-label">Map source: NASA Global Imagery Browse Services (GIBS) &amp; OpenStreetMap</p>
+
+        <div class="actions">
+          <a class="btn btn-main" href="how-sar.html">How does SAR work?</a>
+          <a class="btn btn-ghost" href="data.html">Data sources and limits</a>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap">RadarLens · Built for NASA Space Apps · Uses NISAR radar data</div>
+  </footer>
+
+  <script>
+    var statusLoading = document.getElementById('status-loading');
+    var statusError   = document.getElementById('status-error');
+
+    function showLoading() {
+      statusError.hidden = true;
+      statusLoading.hidden = false;
+    }
+    function showError() {
+      statusLoading.hidden = true;
+      statusError.hidden = false;
+    }
+    function showContent() {
+      statusLoading.hidden = true;
+      statusError.hidden = true;
+    }
+
+    // Leaflet Map & NASA GIBS Layer
+    var mapInstance = null;
+    var bboxLayer = null;
+
+    function updateMap(bbox, title) {
+      if (!Array.isArray(bbox) || bbox.length < 4 || typeof L === 'undefined') return;
+      var mapEl = document.getElementById('map');
+      if (!mapEl) return;
+
+      if (!mapInstance) {
+        mapInstance = L.map('map', {
+          scrollWheelZoom: false
+        });
+
+        var osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 18,
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        });
+
+        // NASA GIBS MODIS Terra True-Color WMTS layer
+        var gibsLayer = L.tileLayer('https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/2024-05-01/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg', {
+          maxZoom: 9,
+          attribution: 'Imagery &copy; <a href="https://earthdata.nasa.gov/eosdis/science-system-description/eosdis-components/gibs">NASA GIBS</a>'
+        });
+
+        osmLayer.addTo(mapInstance);
+        gibsLayer.addTo(mapInstance);
+
+        L.control.layers(
+          { 'NASA GIBS Satellite': gibsLayer, 'OpenStreetMap': osmLayer },
+          null,
+          { position: 'topright' }
+        ).addTo(mapInstance);
+      }
+
+      if (bboxLayer) {
+        mapInstance.removeLayer(bboxLayer);
+      }
+
+      // bbox: [south, west, north, east] -> Leaflet bounds: [[south, west], [north, east]]
+      var bounds = [[bbox[0], bbox[1]], [bbox[2], bbox[3]]];
+      bboxLayer = L.rectangle(bounds, {
+        color: '#d9640f',
+        weight: 3,
+        fillColor: '#d9640f',
+        fillOpacity: 0.25
+      }).addTo(mapInstance);
+
+      bboxLayer.bindPopup('<strong>' + (title || 'Study area') + '</strong><br>Monitored bounding box<br><small>S: ' + bbox[0] + ', W: ' + bbox[1] + ', N: ' + bbox[2] + ', E: ' + bbox[3] + '</small>');
+      mapInstance.fitBounds(bounds, { padding: [30, 30], maxZoom: 10 });
+      setTimeout(function () { if (mapInstance) mapInstance.invalidateSize(); }, 200);
+    }
+
+    function fillPage(data) {
+      if (!data) return;
+
+      // 1. Headline & Explanations
+      var headlineEl = document.getElementById('event-headline');
+      if (headlineEl && data.headline) headlineEl.textContent = data.headline;
+
+      var whyMattersEl = document.getElementById('event-why-matters');
+      if (whyMattersEl && data.whyMatters) whyMattersEl.textContent = data.whyMatters;
+
+      var whyRadarEl = document.getElementById('why-radar');
+      if (whyRadarEl && data.whyRadar) whyRadarEl.textContent = data.whyRadar;
+
+      var statsUnitEl = document.getElementById('stats-unit');
+      if (statsUnitEl && data.unit) statsUnitEl.textContent = data.unit;
+
+      // 2. Slider Images & Labels
+      var imgBefore = document.getElementById('img-before');
+      if (imgBefore && data.before) {
+        imgBefore.src = data.before.image;
+        imgBefore.alt = (data.title || 'Event') + ' before (' + (data.before.date || '') + ')';
+      }
+
+      var imgAfter = document.getElementById('img-after');
+      if (imgAfter && data.after) {
+        imgAfter.src = data.after.image;
+        imgAfter.alt = (data.title || 'Event') + ' after (' + (data.after.date || '') + ')';
+      }
+
+      var compareLabel = document.getElementById('compare-label');
+      if (compareLabel) {
+        var beforeCred = (data.credits && data.credits[0]) ? data.credits[0].satellite : 'C-band SAR';
+        var authorCred = (data.credits && data.credits[0]) ? data.credits[0].author : 'Copernicus / NASA';
+        compareLabel.innerHTML =
+          'Source: ' + authorCred +
+          ' · Before: ' + (data.before ? data.before.date : 'N/A') +
+          ' · After: ' + (data.after ? data.after.date : 'N/A') +
+          ' · Satellite: ' + beforeCred +
+          ' · <span id="gap-days">' + (data.gapDays != null ? data.gapDays : '--') + '</span> days apart <small>(Sample data)</small>';
+      }
+
+      // 3. Stats & Progress Bars
+      var statBefore = document.getElementById('stat-before');
+      var barBefore  = document.getElementById('bar-before');
+      if (statBefore && data.before) {
+        statBefore.textContent = data.before.value + '%';
+        if (barBefore) barBefore.style.width = Math.min(100, Math.max(0, data.before.value)) + '%';
+      }
+
+      var statAfter = document.getElementById('stat-after');
+      var barAfter  = document.getElementById('bar-after');
+      if (statAfter && data.after) {
+        statAfter.textContent = data.after.value + '%';
+        if (barAfter) barAfter.style.width = Math.min(100, Math.max(0, data.after.value)) + '%';
+      }
+
+      // 4. Side-by-Side: Radar vs Optical
+      var imgRadar = document.getElementById('img-radar');
+      if (imgRadar && data.radarImage) {
+        imgRadar.src = data.radarImage;
+        imgRadar.alt = 'Radar satellite view of ' + (data.title || '');
+      }
+
+      var imgOptical = document.getElementById('img-optical');
+      if (imgOptical && data.opticalImage) {
+        imgOptical.src = data.opticalImage;
+        imgOptical.alt = 'Optical satellite camera view of ' + (data.title || '');
+      }
+
+      var radarCap = document.getElementById('radar-caption');
+      if (radarCap && data.credits && data.credits[0]) {
+        radarCap.textContent = 'Source: ' + data.credits[0].author + ' · Satellite: ' + data.credits[0].satellite;
+      }
+
+      var opticalCap = document.getElementById('optical-caption');
+      if (opticalCap && data.credits && data.credits[1]) {
+        opticalCap.textContent = 'Source: ' + data.credits[1].author + ' · Satellite: ' + data.credits[1].satellite;
+      }
+
+      // 5. Leaflet Map
+      if (data.bbox) {
+        updateMap(data.bbox, data.title);
+      }
+    }
+
+    function loadEvent(eventId) {
+      showLoading();
+      fetch('/api/events/' + encodeURIComponent(eventId))
+        .then(function (r) {
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.json();
+        })
+        .then(function (data) {
+          fillPage(data);
+          showContent();
+        })
+        .catch(function (err) {
+          console.error('Failed to load event data for ' + eventId + ':', err);
+          showError();
+        });
+    }
+
+    // Event switcher
+    var tabs = document.querySelectorAll('.tab');
+    var chip = document.getElementById('event-chip');
+
+    function selectEvent(eventId) {
+      tabs.forEach(function (t) {
+        var match = (t.dataset.event === eventId);
+        t.setAttribute('aria-pressed', String(match));
+        if (match && chip) {
+          chip.textContent = t.textContent;
+          chip.className = 'chip' + (eventId === 'flood' ? ' chip-flood' : '');
+        }
+      });
+      loadEvent(eventId);
+    }
+
+    tabs.forEach(function (t) {
+      t.addEventListener('click', function () {
+        var id = t.dataset.event;
+        if (location.hash !== '#' + id) {
+          history.replaceState(null, '', '#' + id);
+        }
+        selectEvent(id);
+      });
+    });
+
+    document.getElementById('retry-btn').addEventListener('click', function () {
+      var current = document.querySelector('.tab[aria-pressed="true"]');
+      loadEvent(current ? current.dataset.event : 'flood');
+    });
+
+    // "What am I looking at?" expander
+    var explainBtn  = document.getElementById('explain-btn');
+    var explainBody = document.getElementById('explain-body');
+    if (explainBtn && explainBody) {
+      explainBtn.addEventListener('click', function () {
+        var open = explainBtn.getAttribute('aria-expanded') === 'true';
+        explainBtn.setAttribute('aria-expanded', String(!open));
+        explainBody.hidden = open;
+      });
+    }
+
+    // Before/after slider
+    var compare      = document.getElementById('compare');
+    var compareRange = document.getElementById('compare-range');
+
+    function updateSlider() {
+      if (!compare || !compareRange) return;
+      var v = compareRange.value;
+      compare.style.setProperty('--pos', v + '%');
+      compareRange.setAttribute('aria-valuetext', v + '% before, ' + (100 - v) + '% after');
+    }
+
+    if (compareRange) {
+      compareRange.addEventListener('input', updateSlider);
+      updateSlider();
+    }
+
+    // Highlight changed area toggle
+    var highlightToggle = document.getElementById('highlight-toggle');
+    var changeOverlay   = document.getElementById('change-overlay');
+    if (highlightToggle && changeOverlay) {
+      highlightToggle.addEventListener('change', function () {
+        changeOverlay.classList.toggle('is-active', this.checked);
+      });
+    }
+
+    // Handle initial hash and hashchange
+    function handleHash() {
+      var wanted = location.hash.replace('#', '').toLowerCase();
+      if (['flood', 'glacier', 'wetland'].indexOf(wanted) !== -1) {
+        selectEvent(wanted);
+      } else {
+        selectEvent('flood');
+      }
+    }
+
+    window.addEventListener('hashchange', handleHash);
+    handleHash();
+  </script>
+
+</body>
+</html>

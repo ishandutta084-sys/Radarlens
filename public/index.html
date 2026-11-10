@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RadarLens - the satellite that sees through clouds</title>
+  <meta name="description"
+    content="RadarLens turns NASA NISAR radar data into simple before and after views of surface change.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <header class="top">
+    <div class="wrap bar">
+      <a class="brand" href="index.html" aria-label="RadarLens home">
+        <svg class="logo" viewBox="0 0 32 32" width="30" height="30" aria-hidden="true">
+          <path class="l-sweep" d="M16 16 L16 2 A14 14 0 0 1 28.12 9 Z" fill="currentColor" />
+          <circle class="l-ring" cx="16" cy="16" r="14" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-dasharray="6 4" />
+          <circle class="l-mid" cx="16" cy="16" r="8" fill="none" stroke="currentColor" stroke-width="2" />
+          <circle class="l-ping" cx="16" cy="16" r="3" fill="none" stroke="currentColor" stroke-width="1.5" />
+        </svg>
+        RadarLens
+      </a>
+
+      <nav aria-label="Main">
+        <a href="index.html" aria-current="page">Home</a>
+        <a href="viewer.html">Event viewer</a>
+        <a href="how-sar.html">How SAR works</a>
+        <a href="data.html">Data sources</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div class="hero-text">
+          <p class="chip chip-dark rise" style="--d:.1s">NASA Space Apps · NISAR challenge</p>
+
+          <h1>
+            <span class="rise" style="--d:.25s">The satellite</span>
+            <span class="rise" style="--d:.4s">that sees through</span>
+            <span class="rise" style="--d:.55s">clouds.</span>
+          </h1>
+
+          <p class="lead rise" style="--d:.75s">
+            NISAR is a radar satellite from NASA and ISRO. It scans the ground
+            day and night, in any weather. RadarLens shows what changed.
+          </p>
+
+          <div class="btn-row rise" style="--d:.95s">
+            <a class="btn btn-main" href="#events">Start exploring</a>
+            <a class="btn btn-ghost" href="how-sar.html">How does it work?</a>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <img src="images/earth-satellite-animation.webp" alt="A satellite orbiting Earth">
+        </div>
+      </div>
+    </section>
+
+    <section class="strip" aria-label="Why radar">
+      <div class="wrap strip-grid">
+        <p><b>Sees through clouds</b><span>Radio waves pass through cloud and smoke.</span></p>
+        <p><b>Works day and night</b><span>It makes its own signal, so it needs no sunlight.</span></p>
+        <p><b>Spots change</b><span>Compare two passes to see what moved.</span></p>
+      </div>
+    </section>
+
+    <section class="section" id="events">
+      <div class="wrap">
+        <h2>Pick a change to explore</h2>
+        <p class="muted">Each card opens a before and after view.</p>
+
+        <div class="cards">
+          <a class="card" href="viewer.html#flood">
+            <div class="thumb">
+              <img src="flood.png" alt="Radar image of a river flooding farmland">
+              <i class="scan"></i>
+            </div>
+            <span class="chip chip-flood">Flood</span>
+            <h3>River flood</h3>
+            <p class="muted">Water spreads across farmland.</p>
+          </a>
+
+          <a class="card" href="viewer.html#glacier">
+            <div class="thumb">
+              <img src="glacier.png" alt="Radar image of ice moving down a valley">
+              <i class="scan"></i>
+            </div>
+            <span class="chip">Glacier</span>
+            <h3>Glacier movement</h3>
+            <p class="muted">Ice creeps down a valley.</p>
+          </a>
+
+          <a class="card" href="viewer.html#wetland">
+            <div class="thumb">
+              <img src="wetland.png" alt="Radar image of marshland">
+              <i class="scan"></i>
+            </div>
+            <span class="chip">Wetland</span>
+            <h3>Wetland loss</h3>
+            <p class="muted">Marsh turns into dry land.</p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="foot">
+    <div class="wrap">RadarLens · Built for NASA Space Apps · Uses NISAR radar data</div>
+  </footer>
+
+  <script>
+    // Dynamically build event cards from /api/events
+    fetch('/api/events')
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (events) {
+        var container = document.querySelector('.cards');
+        if (!container || !Array.isArray(events) || events.length === 0) return;
+        container.innerHTML = '';
+        events.forEach(function (e) {
+          var a = document.createElement('a');
+          a.className = 'card';
+          a.href = 'viewer.html#' + encodeURIComponent(e.id);
+          var chipClass = 'chip' + (e.type === 'flood' ? ' chip-flood' : '');
+          var chipText = e.type ? (e.type.charAt(0).toUpperCase() + e.type.slice(1)) : 'Event';
+          a.innerHTML =
+            '<div class="thumb">' +
+            '<img src="' + e.thumb + '" alt="' + (e.title || 'Event') + ' thumbnail">' +
+            '<i class="scan"></i>' +
+            '</div>' +
+            '<span class="' + chipClass + '">' + chipText + '</span>' +
+            '<h3>' + (e.title || '') + '</h3>' +
+            '<p class="muted">' + (e.summary || '') + '</p>';
+          container.appendChild(a);
+        });
+      })
+      .catch(function (err) {
+        console.warn('Could not fetch events from /api/events, keeping fallback cards:', err);
+      });
+  </script>
+
+</body>
+
+</html>
