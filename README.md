@@ -1,119 +1,81 @@
-# ASTRAV//E 🛰️
+# RadarLens 🛰️
 
-> **Planetary Analogue Discovery Platform · NASA Space Apps Challenge**  
-> **ASTRAV//E** identifies Earth locations resembling environments on the Moon and Mars using Synthetic Aperture Radar (SAR), satellite observations, and geospatial analysis.
-
----
-
-## 🏛️ Migrated Technology Architecture
-
-The application has been transformed into a polished, premium scientific platform under the **ASTRAV//E** brand, while preserving 100% of existing functionality, architecture, and backend APIs:
-
-| Layer | Technology Stack |
-| :--- | :--- |
-| **Brand Identity** | **ASTRAV//E** — Planetary Analogue Discovery Platform |
-| **Frontend** | **React 18 + Vite + Modular Vanilla CSS** (React Router DOM) |
-| **Styling & Tokens** | **Strict Vanilla CSS** (Variables, Typography, Animations, Components — zero framework bloat) |
-| **Backend** | **Python 3.12 + FastAPI + Pydantic v2 + Uvicorn** |
-| **API Docs** | **OpenAPI Swagger (`/docs`) & ReDoc (`/redoc`)** |
-| **Database** | **Supabase PostgreSQL** (with SQL schema & RLS policies) |
-| **Theme System** | **Dual Light Neutral & Dark Mission Control** (persisted via `localStorage` with anti-flash script) |
-| **Testing** | **10/10 Automated Pytest Suite Passing** |
+> **NASA Space Apps Challenge · NISAR: The satellite that sees through clouds**
+> RadarLens is an interactive Earth observation web platform that visualizes surface change (floods, glacier motion, wetland loss) using Synthetic Aperture Radar (SAR) and optical satellite comparisons.
 
 ---
 
-## 📂 Project Structure
+## 🚀 Quick Start
 
-```
-SAR/
-├── frontend/                     # React + Vite Frontend
-│   ├── public/                   # Static assets & satellite imagery
-│   │   └── images/
-│   ├── src/
-│   │   ├── components/           # Modular components (Header, Footer, ThemeToggle, etc.)
-│   │   ├── pages/                # Page components (HomePage, ViewerPage, HowSarPage, DataPage)
-│   │   ├── services/             # API communication layer (Fetch / REST)
-│   │   ├── styles/               # Preserved exact CSS and design tokens
-│   │   ├── App.jsx               # Route definitions
-│   │   └── main.jsx              # React DOM root
-│   ├── index.html
-│   ├── vite.config.js
-│   ├── package.json
-│   └── .env.example
-├── backend/                      # Python FastAPI REST Backend
-│   ├── app/
-│   │   ├── api/routes.py         # REST endpoints (/api/events, /api/sources, /api/feedback, etc.)
-│   │   ├── core/config.py        # Environment & CORS configuration
-│   │   ├── database/             # Supabase client & PostgreSQL SQL schema
-│   │   │   ├── schema.sql        # Supabase PostgreSQL schema with RLS & seed data
-│   │   │   └── supabase_client.py# Supabase Python integration with local fallback
-│   │   ├── models/schemas.py     # Pydantic schemas & response validation
-│   │   ├── services/data_service.py # Business logic & data persistence
-│   │   └── main.py               # FastAPI entry point, CORS, and health endpoints
-│   ├── tests/                    # Automated Pytest suite
-│   │   └── test_api.py
-│   ├── data/                     # Seed datasets (events, sources, steps, team, feedback)
-│   ├── requirements.txt          # Python dependencies
-│   ├── .env.example
-│   └── README.md
-├── public/                       # Original static files (retained for backward compatibility)
-├── data/                         # Original seed files (retained)
-├── server.js                     # Original Express server (retained)
-└── README.md
-```
+### Prerequisites
+- [Node.js](https://nodejs.org/) (v18 or higher recommended; tested on Node v24)
+- npm
 
----
-
-## 🚀 Running the Migrated Application
-
-### 1. Start the FastAPI Backend
+### 1. Installation
+Install the required dependencies (`express` and `nodemon`):
 ```bash
-cd backend
-pip install -r requirements.txt
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-```
-- API root: [http://localhost:8000](http://localhost:8000)
-- Swagger Documentation: [http://localhost:8000/docs](http://localhost:8000/docs)
-- ReDoc Documentation: [http://localhost:8000/redoc](http://localhost:8000/redoc)
-- Health Check: [http://localhost:8000/health](http://localhost:8000/health)
-
-### 2. Start the React Frontend
-```bash
-cd frontend
 npm install
+```
+
+### 2. Run the Server
+Start the local server:
+```bash
+npm start
+```
+The server will start on `http://localhost:3000`. If port 3000 is occupied, it automatically increments to the next free port and displays the active URL in your terminal.
+
+For development with hot reloading:
+```bash
 npm run dev
 ```
-- Web Application: [http://localhost:5173](http://localhost:5173)
+
+### 3. Open in Browser
+- **Home Page**: [http://localhost:3000/index.html](http://localhost:3000/index.html)
+- **Event Viewer**: [http://localhost:3000/viewer.html](http://localhost:3000/viewer.html)
+  - Flood: [http://localhost:3000/viewer.html#flood](http://localhost:3000/viewer.html#flood)
+  - Glacier: [http://localhost:3000/viewer.html#glacier](http://localhost:3000/viewer.html#glacier)
+  - Wetland: [http://localhost:3000/viewer.html#wetland](http://localhost:3000/viewer.html#wetland)
+- **How SAR Works**: [http://localhost:3000/how-sar.html](http://localhost:3000/how-sar.html)
+- **Data Sources & Credits**: [http://localhost:3000/data.html](http://localhost:3000/data.html)
 
 ---
 
-## 🗄️ Supabase PostgreSQL Setup
+## 📡 API Endpoints
 
-1. Create a project in [Supabase](https://supabase.com).
-2. Open the **SQL Editor** in your Supabase dashboard and run `backend/app/database/schema.sql`.
-   - Creates the `events`, `sources`, `steps`, `team_members`, and `feedback` tables.
-   - Enables Row Level Security (RLS) policies allowing public reads and secured feedback submissions.
-   - Populates seed records.
-3. Add your Supabase credentials to `backend/.env`:
-   ```env
-   SUPABASE_URL=https://your-project.supabase.co
-   SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-   SUPABASE_ANON_KEY=your-anon-key
-   ```
-*(Note: If no Supabase credentials are configured, the backend automatically uses its robust local fallback store, ensuring zero downtime).*
+All endpoints return standard JSON responses with appropriate HTTP status codes (200, 201, 400, 404, 429, 500):
+
+- `GET /api/events` — Returns summary list of events (`flood`, `glacier`, `wetland`) with thumbnails and descriptions.
+- `GET /api/events/:id` — Detailed event dataset including before/after images, dates, sample metric values, gap days, bounding box (`[south, west, north, east]`), and full attribution metadata. Returns 404 if event is unknown.
+- `GET /api/sources` — Rows for the Data Sources and Datasets table.
+- `GET /api/team` — 6 NASA Space Apps team members with roles and names.
+- `GET /api/steps` — The 4 sequential steps explaining Synthetic Aperture Radar.
+- `POST /api/feedback` — Accepts `{ name, message }`. Validates input, trims whitespace, limits length (name ≤ 100, message ≤ 1000), applies IP rate limiting (max 5 submissions per minute), and appends entries to `data/feedback.json`.
 
 ---
 
-## 🧪 Testing and Verification
+## 📊 Features & Architecture
 
-To execute the backend automated test suite:
-```bash
-cd backend
-python -m pytest tests/test_api.py -v
-```
+- **Vanilla Frontend**: Pure vanilla HTML5, CSS3, and JavaScript — no heavyweight frontend framework.
+- **Before/After Split Slider**: Compare two satellite passes with draggable handle, range slider input, touch support, and full keyboard navigation (arrow keys, Home, End).
+- **Change Area Highlight**: Toggleable tinted overlay highlighting surface change on the After image.
+- **Interactive Global Map**: Leaflet map integrated with **NASA Global Imagery Browse Services (GIBS)** MODIS Terra true-color WMTS layer and OpenStreetMap, rendering a bounding-box polygon around the study site.
+- **Dark/Light Theming & Accessibility**: Respects `prefers-color-scheme`, `prefers-reduced-motion`, visible focus rings, ARIA roles (`role="status"`, `aria-pressed`, `aria-label`).
+- **Optimized Media**: Original 22.3 MB GIF converted to 4.2 MB WebP and 955 KB MP4. All satellite imagery scaled to max 1600px wide.
 
-To build the React production bundle:
-```bash
-cd frontend
-npm run build
-```
+---
+
+## ⚖️ Honesty Rules & Scientific Attribution
+
+In accordance with scientific integrity guidelines:
+- **Sample Data**: Actual NISAR orbital data will be available once the satellite is commissioned in orbit. In this prototype, metric values (percentages, estimated rates, gap days) are illustrative **Sample data** and are explicitly marked as such across the UI.
+- **Satellite Labelling**: No proxy image is falsely labelled as NISAR. All satellite imagery is credited with its true origin:
+  - **River flood**: Copernicus Sentinel-1 C-band SAR & Copernicus Sentinel-2 MSI (ESA / European Union).
+  - **Glacier movement**: Copernicus Sentinel-1 C-SAR & Sentinel-2 (ESA / European Union) over Jakobshavn Glacier / Ilulissat Icefjord, Greenland.
+  - **Wetland change**: Copernicus Sentinel-2 (Fuente de Piedra, Spain) and NASA/JPL UAVSAR & ALOS PALSAR L-band SAR (Pacaya-Samiria, Amazon Basin).
+
+### To Replace with Real Data (Once NISAR Launches)
+When operational NISAR data products are released on NASA Earthdata / ASF DAAC:
+1. `before.value` and `after.value`: Replace illustrative percentages with NISAR L-band backscatter intensity (dB), interferometric coherence ($\gamma$), or surface water extent ($km^2$).
+2. `before.image` and `after.image`: Replace with calibrated geocoded NISAR GCOV (Geocoded Polarimetric Covariance) or GSV (Geocoded Surface Velocity) rasters.
+3. `before.date` and `after.date`: Replace with exact 12-day NISAR repeat orbit acquisition dates.
+4. `gapDays`: Replace with actual orbital revisit difference (typically 12 or 24 days).
