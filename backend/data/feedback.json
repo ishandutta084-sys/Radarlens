@@ -1,0 +1,22 @@
+[
+  {
+    "id": "mvznkvgu081kd",
+    "name": "Ishan Dutta",
+    "message": "Hello",
+    "createdAt": "2026-11-02T19:29:43.758Z"
+  },
+  {
+    "id": "0967fa99-acb",
+    "name": "Space Enthusiast",
+    "message": "Loved the radar viewer!",
+    "clientIp": "testclient",
+    "createdAt": "2026-11-14T08:50:16.499263+00:00"
+  },
+  {
+    "id": "65e4cd90-40f",
+    "name": "Space Enthusiast",
+    "message": "Loved the radar viewer!",
+    "clientIp": "testclient",
+    "createdAt": "2026-11-14T08:50:37.829225+00:00"
+  }
+]

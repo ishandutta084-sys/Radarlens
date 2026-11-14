@@ -1,0 +1,132 @@
+[
+  {
+    "id": "flood",
+    "title": "River flood",
+    "type": "flood",
+    "thumb": "images/flood.png",
+    "summary": "Water spreads across farmland and floodplains.",
+    "headline": "Water inundated 48% of the monitored river basin after heavy monsoon rainfall",
+    "whyMatters": "Why it matters: Emergency response teams and agricultural coordinators can map inundated crops and isolated villages within hours to deploy relief supplies.",
+    "whyRadar": "Heavy monsoon clouds completely obscured the disaster zone from optical satellites, but radar signals passed straight through clouds and rain to map surface standing water day and night.",
+    "unit": "Share of monitored study area inundated by surface water (Sample data)",
+    "before": {
+      "image": "images/flood-before.jpg",
+      "date": "2022-05-04",
+      "value": 18
+    },
+    "after": {
+      "image": "images/flood-after.jpg",
+      "date": "2022-06-21",
+      "value": 48
+    },
+    "radarImage": "images/flood-radar.jpg",
+    "opticalImage": "images/flood-optical.jpg",
+    "gapDays": 48,
+    "bbox": [24.1, 91.0, 25.4, 92.5],
+    "credits": [
+      {
+        "role": "Before & After Radar",
+        "title": "Copernicus Sentinel-1 SAR Multi-Temporal Flood Inundation Acquisition (Northeastern Bangladesh)",
+        "satellite": "Copernicus Sentinel-1 (C-band SAR)",
+        "author": "European Space Agency (ESA) / Copernicus Programme",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Copernicus_Sentinel-1_maps_Bangladesh_flood_ESA24337927.gif",
+        "license": "Creative Commons Attribution 3.0 IGO / Copernicus Open Access"
+      },
+      {
+        "role": "Optical Comparison",
+        "title": "Copernicus Sentinel-2 True-Color Observation over Inundated River Basin",
+        "satellite": "Copernicus Sentinel-2 (Multispectral)",
+        "author": "European Union / Copernicus Programme / ESA",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Devastating_floods_in_eastern_Bangladesh_(Copernicus_2024-09-03).png",
+        "license": "Copernicus Open Access / Creative Commons Attribution"
+      }
+    ]
+  },
+  {
+    "id": "glacier",
+    "title": "Glacier movement",
+    "type": "glacier",
+    "thumb": "images/glacier.png",
+    "summary": "Ice creeps down a valley and calves into the fjord.",
+    "headline": "Fast-flowing glacier front advanced 34 meters per day through Ilulissat Icefjord",
+    "whyMatters": "Why it matters: Glaciologists and climate scientists track polar ice velocity and calving rates to calculate sea level rise contributions and ocean circulation changes.",
+    "whyRadar": "Polar regions experience months of winter darkness and frequent cloud cover; radar generates its own microwave pulse to detect crevasse displacement and iceberg discharge without daylight.",
+    "unit": "Glacier flow speed index / relative ice margin displacement (Sample data)",
+    "before": {
+      "image": "images/glacier-before.jpg",
+      "date": "2015-08-16",
+      "value": 35
+    },
+    "after": {
+      "image": "images/glacier-after.jpg",
+      "date": "2024-08-03",
+      "value": 72
+    },
+    "radarImage": "images/glacier-radar.jpg",
+    "opticalImage": "images/glacier-optical.jpg",
+    "gapDays": 12,
+    "bbox": [69.0, -51.5, 69.4, -49.5],
+    "credits": [
+      {
+        "role": "Before Calving",
+        "title": "Jakobshavn Glacier Calving Front Event",
+        "satellite": "Copernicus Sentinel-2 & Sentinel-1",
+        "author": "European Space Agency (ESA)",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Jakobshavn_glacier_calving_ESA345821.jpg",
+        "license": "CC BY-SA 3.0 IGO"
+      },
+      {
+        "role": "Radar vs Optical",
+        "title": "Earth from Space: Jakobshavn Glacier Dual Optical and SAR Observation",
+        "satellite": "Copernicus Sentinel-1 (C-SAR) and Sentinel-2 (MSI)",
+        "author": "European Space Agency (ESA)",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Earth_from_Space-_Jakobshavn_Glacier,_Greenland_ESA504870_-_Jakobshavn_Glacier_captured_by_Copernicus_Sentinel-1.jpg",
+        "license": "Creative Commons Attribution / ESA"
+      }
+    ]
+  },
+  {
+    "id": "wetland",
+    "title": "Wetland loss",
+    "type": "wetland",
+    "thumb": "images/wetland.png",
+    "summary": "Marshland dries out and vegetative canopy shrinks.",
+    "headline": "Prolonged drought reduced open marsh surface water by 62% over 3 seasons",
+    "whyMatters": "Why it matters: Conservationists and water authorities monitor wetland degradation to protect migratory bird sanctuaries, carbon sinks, and underground aquifer health.",
+    "whyRadar": "Radar backscatter distinguishes between open water, dense reed marsh, and dry soil, and can detect flooded water hidden underneath thick forest and vegetation canopies.",
+    "unit": "Percentage of wetland basin covered by water and healthy marsh (Sample data)",
+    "before": {
+      "image": "images/wetland-before.jpg",
+      "date": "2020-06-15",
+      "value": 78
+    },
+    "after": {
+      "image": "images/wetland-after.jpg",
+      "date": "2023-06-20",
+      "value": 26
+    },
+    "radarImage": "images/wetland-radar.jpg",
+    "opticalImage": "images/wetland-optical.jpg",
+    "gapDays": 1095,
+    "bbox": [37.08, -4.78, 37.18, -4.68],
+    "credits": [
+      {
+        "role": "Before & After Drought",
+        "title": "Drought Impact on Fuente de Piedra Wetland Lagoon (2020 vs 2023)",
+        "satellite": "Copernicus Sentinel-2",
+        "author": "European Union / Copernicus Programme / ESA",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:The_impact_of_the_drought_on_the_Fuente_de_Piedra_wetlands_in_Spain.jpg",
+        "license": "Copernicus Open Access / Creative Commons Attribution"
+      },
+      {
+        "role": "Wetland Radar",
+        "title": "Pacaya-Samiria Amazon Wetland Inundation L-Band Radar (NISAR Proxy)",
+        "satellite": "NASA/JPL UAVSAR & ALOS PALSAR (L-band SAR)",
+        "author": "NASA/JPL-Caltech",
+        "sourceUrl": "https://photojournal.jpl.nasa.gov/catalog/PIA26112",
+        "license": "Public Domain (NASA Imagery)"
+      }
+    ]
+  }
+]
+
