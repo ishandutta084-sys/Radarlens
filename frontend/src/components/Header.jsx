@@ -4,10 +4,10 @@ import ThemeToggle from './ThemeToggle';
 
 export default function Header() {
   return (
-    <header className="top">
+    <header className="top" role="banner">
       <div className="wrap bar">
-        <Link className="brand" to="/" aria-label="RadarLens home">
-          <svg className="logo" viewBox="0 0 32 32" width="30" height="30" aria-hidden="true">
+        <Link className="brand" to="/" aria-label="ASTRAV//E Planetary Analogue Discovery Platform">
+          <svg className="logo" viewBox="0 0 32 32" width="28" height="28" aria-hidden="true">
             <path className="l-sweep" d="M16 16 L16 2 A14 14 0 0 1 28.12 9 Z" fill="currentColor" />
             <circle
               className="l-ring"
@@ -16,8 +16,8 @@ export default function Header() {
               r="14"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
-              strokeDasharray="6 4"
+              strokeWidth="1.5"
+              strokeDasharray="4 3"
             />
             <circle
               className="l-mid"
@@ -26,51 +26,52 @@ export default function Header() {
               r="8"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth="1.5"
             />
             <circle
               className="l-ping"
               cx="16"
               cy="16"
-              r="3"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
+              r="2.5"
+              fill="currentColor"
             />
           </svg>
-          RadarLens
+          <span className="brand-name">
+            ASTRAV<span className="brand-slash">//</span>E
+          </span>
+          <span className="brand-indicator" title="Telemetry Feed Online" aria-label="System online"></span>
         </Link>
 
         <div className="top-actions">
-          <nav aria-label="Main">
+          <nav aria-label="Primary Platform Navigation">
             <NavLink
               to="/"
               end
               className={({ isActive }) => (isActive ? 'active' : '')}
               aria-current={({ isActive }) => (isActive ? 'page' : undefined)}
             >
-              Home
+              Overview
             </NavLink>
             <NavLink
               to="/viewer"
               className={({ isActive }) => (isActive ? 'active' : '')}
               aria-current={({ isActive }) => (isActive ? 'page' : undefined)}
             >
-              Event viewer
+              Analogue viewer
             </NavLink>
             <NavLink
               to="/how-sar"
               className={({ isActive }) => (isActive ? 'active' : '')}
               aria-current={({ isActive }) => (isActive ? 'page' : undefined)}
             >
-              How SAR works
+              SAR Physics
             </NavLink>
             <NavLink
               to="/data"
               className={({ isActive }) => (isActive ? 'active' : '')}
               aria-current={({ isActive }) => (isActive ? 'page' : undefined)}
             >
-              Data sources
+              Data &amp; Provenance
             </NavLink>
           </nav>
 

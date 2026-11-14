@@ -1,22 +1,24 @@
-# RadarLens 🛰️
+# ASTRAV//E 🛰️
 
-> **NASA Space Apps Challenge · NISAR: The satellite that sees through clouds**  
-> RadarLens is an interactive Earth observation web platform that visualizes surface change (floods, glacier motion, wetland loss) using Synthetic Aperture Radar (SAR) and optical satellite comparisons.
+> **Planetary Analogue Discovery Platform · NASA Space Apps Challenge**  
+> **ASTRAV//E** identifies Earth locations resembling environments on the Moon and Mars using Synthetic Aperture Radar (SAR), satellite observations, and geospatial analysis.
 
 ---
 
 ## 🏛️ Migrated Technology Architecture
 
-The application has been migrated to a modern, decoupled production architecture while preserving 100% of the original visual design, interactions, responsive behavior, and NASA scientific features:
+The application has been transformed into a polished, premium scientific platform under the **ASTRAV//E** brand, while preserving 100% of existing functionality, architecture, and backend APIs:
 
-| Layer | Original Technology | Migrated Target Technology |
-| :--- | :--- | :--- |
-| **Frontend** | Vanilla HTML5 / JS / CSS | **React 18 + Vite + Vanilla CSS** (React Router DOM) |
-| **Backend** | Node.js + Express.js | **Python 3.12 + FastAPI + Pydantic v2 + Uvicorn** |
-| **API Docs** | None / Manual | **OpenAPI Swagger (`/docs`) & ReDoc (`/redoc`)** |
-| **Database** | Flat JSON files | **Supabase PostgreSQL** (with SQL schema & RLS policies) |
-| **Styling** | Custom Vanilla CSS & CSS Variables | **Preserved Custom Vanilla CSS** (Zero framework bloat) |
-| **Theme System** | Dual Bright/Dark with localStorage | **Preserved Dual Bright/Dark Theme System** |
+| Layer | Technology Stack |
+| :--- | :--- |
+| **Brand Identity** | **ASTRAV//E** — Planetary Analogue Discovery Platform |
+| **Frontend** | **React 18 + Vite + Modular Vanilla CSS** (React Router DOM) |
+| **Styling & Tokens** | **Strict Vanilla CSS** (Variables, Typography, Animations, Components — zero framework bloat) |
+| **Backend** | **Python 3.12 + FastAPI + Pydantic v2 + Uvicorn** |
+| **API Docs** | **OpenAPI Swagger (`/docs`) & ReDoc (`/redoc`)** |
+| **Database** | **Supabase PostgreSQL** (with SQL schema & RLS policies) |
+| **Theme System** | **Dual Light Neutral & Dark Mission Control** (persisted via `localStorage` with anti-flash script) |
+| **Testing** | **10/10 Automated Pytest Suite Passing** |
 
 ---
 

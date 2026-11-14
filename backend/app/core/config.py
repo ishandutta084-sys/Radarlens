@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="allow")
 
-    PROJECT_NAME: str = "RadarLens API"
+    PROJECT_NAME: str = "ASTRAV//E API"
     VERSION: str = "1.0.0"
     API_V1_STR: str = "/api"
 

@@ -17,22 +17,22 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
 )
-logger = logging.getLogger("radarlens")
+logger = logging.getLogger("astrave")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.info("RadarLens FastAPI server starting up...")
+    logger.info("ASTRAV//E FastAPI platform server starting up...")
     client = get_supabase_client()
     if client:
         logger.info("Supabase database connection initialized.")
     else:
         logger.info("Running with robust local fallback data store.")
     yield
-    logger.info("RadarLens FastAPI server shutting down...")
+    logger.info("ASTRAV//E FastAPI platform server shutting down...")
 
 app = FastAPI(
-    title="RadarLens - NASA Space Apps NISAR API",
-    description="Backend API for RadarLens: interactive synthetic aperture radar change viewer and lunar analogue analysis.",
+    title="ASTRAV//E — Planetary Analogue Discovery Platform API",
+    description="Scientific backend API for ASTRAV//E: Planetary analogue discovery and Synthetic Aperture Radar (SAR) geospatial analysis.",
     version=settings.VERSION,
     docs_url="/docs",
     redoc_url="/redoc",
@@ -73,7 +73,7 @@ def health_check():
     return HealthResponse(
         status="ok",
         database=db_status,
-        service="RadarLens FastAPI"
+        service="ASTRAV//E FastAPI"
     )
 
 # Include API Router

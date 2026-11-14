@@ -1,6 +1,6 @@
-# RadarLens Backend (FastAPI + Supabase PostgreSQL)
+# ASTRAV//E Backend (FastAPI + Supabase PostgreSQL)
 
-FastAPI REST backend for the **RadarLens** NASA Space Apps NISAR Challenge Earth observation web application.
+FastAPI REST backend for **ASTRAV//E** — Planetary Analogue Discovery Platform (NASA Space Apps Challenge).
 
 ---
 

@@ -1,0 +1,146 @@
+/* ==========================================================================
+   ASTRAV//E ANIMATION & TRANSITION SYSTEM
+   Purposeful, Subtle, High-Performance CSS Transitions
+   ========================================================================== */
+
+/* Universal smooth transitions for theme & interactivity */
+body {
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+a, button, input, select, textarea {
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+/* Subtle content entrance */
+.rise {
+  animation: rise-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation-delay: var(--d, 0s);
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Radar Sensor Reticle Animation */
+.logo [class] {
+  transform-box: view-box;
+  transform-origin: 16px 16px;
+}
+
+.l-sweep {
+  opacity: 0.55;
+  animation: radar-sweep 3s linear infinite;
+}
+
+.l-ring {
+  opacity: 0.8;
+  animation: radar-sweep 16s linear infinite reverse;
+}
+
+.l-mid {
+  animation: radar-pulse 3s ease-in-out infinite;
+}
+
+.l-ping {
+  opacity: 0;
+  animation: radar-ping 3s ease-out infinite;
+}
+
+@keyframes radar-sweep {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes radar-pulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.94);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+}
+
+@keyframes radar-ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  80%, 100% {
+    transform: scale(4.5);
+    opacity: 0;
+  }
+}
+
+/* Card hover scanning ray */
+.scan {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -20%;
+  height: 20%;
+  opacity: 0;
+  background: linear-gradient(to bottom, transparent, rgba(59, 130, 246, 0.45), transparent);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.85);
+  pointer-events: none;
+}
+
+.card:hover .scan,
+.card:focus-visible .scan {
+  animation: scan-ray 0.85s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes scan-ray {
+  0% {
+    top: -20%;
+    opacity: 0.9;
+  }
+  100% {
+    top: 110%;
+    opacity: 0;
+  }
+}
+
+/* Sequential Step Transitions */
+.step {
+  opacity: 0;
+  animation: step-appear 0.45s ease-out forwards;
+  animation-delay: var(--delay, 0s);
+}
+
+@keyframes step-appear {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Accessibility: Respect Reduced Motion Preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .step, .l-sweep, .l-ring, .l-mid, .l-ping, .scan, .rise {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

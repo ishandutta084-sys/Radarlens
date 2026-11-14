@@ -1,6 +1,6 @@
 -- ====================================================================
--- RadarLens Supabase Database Schema
--- NASA Space Apps Challenge · NISAR Challenge
+-- ASTRAV//E Supabase Database Schema
+-- Planetary Analogue Discovery Platform · NASA Space Apps Challenge
 -- ====================================================================
 
 -- 1. Events Table

@@ -1,0 +1,197 @@
+/* ==========================================================================
+   ASTRAV//E DESIGN SYSTEM — DESIGN TOKENS & VARIABLES
+   Aerospace Research & Planetary Analogue Geospatial Platform
+   ========================================================================== */
+
+:root,
+[data-theme="light"] {
+  /* Color Palette — Restrained Scientific Neutral */
+  --bg-primary: #f6f8fa;          /* Technical clean off-white */
+  --bg-secondary: #ffffff;        /* Pure white instrument surfaces */
+  --bg-tertiary: #edf1f5;         /* Control tracks, subtle panels */
+  --bg-elevated: #ffffff;
+  --bg-code: #f1f3f6;
+
+  /* Typography Colors */
+  --text-primary: #0f172a;        /* Deep technical slate-black */
+  --text-secondary: #475569;      /* Clear technical body text */
+  --text-muted: #64748b;          /* Secondary metadata & labels */
+  --text-inverse: #ffffff;
+
+  /* Structural Borders */
+  --border-subtle: #e2e8f0;       /* 1px clean grid divider */
+  --border-medium: #cbd5e1;       /* Active input and card outlines */
+  --border-strong: #94a3b8;       /* Focused / active indicators */
+
+  /* Precision Accents */
+  --accent: #1e3a8a;              /* Deep aerospace navy */
+  --accent-hover: #172554;
+  --accent-light: #eff6ff;
+  --accent-border: #bfdbfe;
+  --alert-orange: #c2410c;        /* Telemetry anomaly / change highlight */
+  --alert-orange-bg: #fff7ed;
+  --alert-orange-border: #ffedd5;
+  --status-success: #15803d;
+  --status-success-bg: #f0fdf4;
+
+  /* Header & Navigation */
+  --top-bg: #ffffff;
+  --top-border: #e2e8f0;
+  --top-text: #0f172a;
+  --top-link: #475569;
+  --top-link-hover: #0f172a;
+  --top-link-active: #1e3a8a;
+  --top-link-active-bg: #f1f5f9;
+
+  /* Theme Toggle */
+  --toggle-bg: #f1f5f9;
+  --toggle-border: #cbd5e1;
+  --toggle-text: #334155;
+  --toggle-thumb: #ffffff;
+
+  /* Footer */
+  --foot-bg: #0f172a;
+  --foot-text: #94a3b8;
+  --foot-border: #1e293b;
+
+  /* Typography Stacks */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-tech: 'IBM Plex Sans', 'Inter', -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Geometrical Geometry */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-pill: 9999px;
+
+  /* Shadows — Subtle, Engineered, Never Diffuse or Glowing */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 2px 4px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-panel: 0 1px 3px rgba(15, 23, 42, 0.08);
+
+  /* Legacy Variable Compatibility Bridge */
+  --bg: var(--bg-primary);
+  --card: var(--bg-secondary);
+  --card-subtle: var(--bg-tertiary);
+  --line: var(--border-subtle);
+  --muted: var(--text-muted);
+  --text: var(--text-primary);
+  --navy: var(--accent);
+  --flood: var(--alert-orange);
+  --radius: var(--radius-md);
+  --font: var(--font-tech);
+
+  /* Layout Constrains */
+  --container-max: 1160px;
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.22s ease;
+}
+
+[data-theme="dark"] {
+  /* Color Palette — Mission Control Night Pass */
+  --bg-primary: #0b0f17;          /* Deep aerospace dark neutral */
+  --bg-secondary: #111827;        /* Instrument console panel surface */
+  --bg-tertiary: #162032;         /* Raised telemetry modules */
+  --bg-elevated: #1a2438;
+  --bg-code: #080c14;
+
+  /* Typography Colors */
+  --text-primary: #f8fafc;        /* High-contrast telemetry white */
+  --text-secondary: #cbd5e1;      /* Secondary sensor data text */
+  --text-muted: #8191a6;          /* Muted metadata */
+  --text-inverse: #0b0f17;
+
+  /* Structural Borders */
+  --border-subtle: #1e293d;       /* Subtle dark divider */
+  --border-medium: #2a3a54;
+  --border-strong: #475a7a;
+
+  /* Precision Accents */
+  --accent: #3b82f6;              /* Controlled mission-critical cobalt */
+  --accent-hover: #60a5fa;
+  --accent-light: #172554;
+  --accent-border: #1d4ed8;
+  --alert-orange: #f97316;
+  --alert-orange-bg: #431407;
+  --alert-orange-border: #7c2d12;
+  --status-success: #22c55e;
+  --status-success-bg: #052e16;
+
+  /* Header & Navigation */
+  --top-bg: #0b0f17;
+  --top-border: #1e293d;
+  --top-text: #f8fafc;
+  --top-link: #94a3b8;
+  --top-link-hover: #f8fafc;
+  --top-link-active: #60a5fa;
+  --top-link-active-bg: #1e293d;
+
+  /* Theme Toggle */
+  --toggle-bg: #162032;
+  --toggle-border: #2a3a54;
+  --toggle-text: #e2e8f0;
+  --toggle-thumb: #0b0f17;
+
+  /* Footer */
+  --foot-bg: #06090e;
+  --foot-text: #64748b;
+  --foot-border: #162032;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 3px 6px rgba(0, 0, 0, 0.5);
+  --shadow-panel: 0 2px 4px rgba(0, 0, 0, 0.6);
+
+  /* Legacy Variable Compatibility Bridge */
+  --bg: var(--bg-primary);
+  --card: var(--bg-secondary);
+  --card-subtle: var(--bg-tertiary);
+  --line: var(--border-subtle);
+  --muted: var(--text-muted);
+  --text: var(--text-primary);
+  --navy: var(--accent);
+  --flood: var(--alert-orange);
+  --radius: var(--radius-md);
+  --font: var(--font-tech);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg-primary: #0b0f17;
+    --bg-secondary: #111827;
+    --bg-tertiary: #162032;
+    --bg-elevated: #1a2438;
+    --bg-code: #080c14;
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #8191a6;
+    --text-inverse: #0b0f17;
+    --border-subtle: #1e293d;
+    --border-medium: #2a3a54;
+    --border-strong: #475a7a;
+    --accent: #3b82f6;
+    --accent-hover: #60a5fa;
+    --accent-light: #172554;
+    --accent-border: #1d4ed8;
+    --alert-orange: #f97316;
+    --alert-orange-bg: #431407;
+    --alert-orange-border: #7c2d12;
+    --status-success: #22c55e;
+    --status-success-bg: #052e16;
+    --top-bg: #0b0f17;
+    --top-border: #1e293d;
+    --top-text: #f8fafc;
+    --top-link: #94a3b8;
+    --top-link-hover: #f8fafc;
+    --top-link-active: #60a5fa;
+    --top-link-active-bg: #1e293d;
+    --toggle-bg: #162032;
+    --toggle-border: #2a3a54;
+    --toggle-text: #e2e8f0;
+    --toggle-thumb: #0b0f17;
+    --foot-bg: #06090e;
+    --foot-text: #64748b;
+    --foot-border: #162032;
+  }
+}

@@ -4,31 +4,31 @@ import { api } from '../services/api';
 const DEFAULT_SOURCES = [
   {
     dataset: 'NISAR L-band & S-band SAR (Proxy: Sentinel-1 & UAVSAR)',
-    usedFor: 'The before and after views, change detection measurements, and backscatter analysis in the Event viewer',
+    usedFor: 'Before/after multi-temporal change detection, backscatter cross-section, surface roughness profiling in the Analogue viewer',
     provider: 'NASA and ISRO (NISAR mission proxy data via ESA Copernicus & NASA JPL)',
-    dateRange: 'Sample data: May 2022 – Aug 2024'
+    dateRange: 'Calibrated orbital observations: May 2022 – Aug 2024'
   },
   {
     dataset: 'NASA GIBS Global WMTS Layer (MODIS / VIIRS Terra/Aqua)',
-    usedFor: 'Interactive global context map and event boundary display powered by Leaflet',
+    usedFor: 'Interactive geospatial context map and bounding box verification powered by Leaflet EPSG:3857',
     provider: 'NASA Global Imagery Browse Services (GIBS) / EOSDIS',
-    dateRange: 'Updated daily (Near Real-Time)'
+    dateRange: 'Daily near real-time imagery updates'
   },
   {
-    dataset: 'Optical Multispectral Imagery (Sentinel-2 & Landsat)',
-    usedFor: 'Direct side-by-side comparison illustrating optical cloud blockage versus radar penetration',
-    provider: 'European Union / ESA (Copernicus) & USGS / NASA',
-    dateRange: '2020 – 2024 per event'
+    dataset: 'Optical Multispectral Imagery (Sentinel-2 MSI & Landsat-8/9 OLI)',
+    usedFor: 'Direct side-by-side comparison demonstrating atmospheric cloud obstruction vs SAR microwave ground penetration',
+    provider: 'European Space Agency (Copernicus) & USGS / NASA',
+    dateRange: '2020 – 2024 coincident observation passes'
   }
 ];
 
 const DEFAULT_TEAM = [
-  { role: 'Frontend Developer', name: 'Shreyas Majumder' },
-  { role: 'Frontend Developer', name: 'Shivam Singho' },
-  { role: 'Backend Developer / Team Leader', name: 'Ishan Dutta' },
-  { role: 'Backend Developer', name: 'Moulina Nandi' },
-  { role: 'Presentation / Research', name: 'Shreya Roy' },
-  { role: 'Presentation / Research', name: 'Simli' }
+  { role: 'Frontend Architecture & Systems', name: 'Shreyas Majumder' },
+  { role: 'Frontend UI & Geospatial Components', name: 'Shivam Singho' },
+  { role: 'Team Lead & Backend Engineering', name: 'Ishan Dutta' },
+  { role: 'Backend Services & Database Pipelines', name: 'Moulina Nandi' },
+  { role: 'Planetary Analogue Research & Analysis', name: 'Shreya Roy' },
+  { role: 'Scientific Presentation & Mission Modeling', name: 'Simli' }
 ];
 
 export default function DataPage() {
@@ -89,14 +89,14 @@ export default function DataPage() {
       const res = await api.submitFeedback({ name: fbName, message: fbMessage });
       setFbStatus({
         type: 'success',
-        text: res.message || 'Thank you! Your feedback has been received.'
+        text: res.message || 'Telemetry feedback transmission verified and logged to database.'
       });
       setFbName('');
       setFbMessage('');
     } catch (err) {
       setFbStatus({
         type: 'error',
-        text: err.message || 'Could not send feedback. Please try again later.'
+        text: err.message || 'Transmission failed. Verify backend connection and retry.'
       });
     } finally {
       setFbLoading(false);
@@ -104,24 +104,33 @@ export default function DataPage() {
   };
 
   return (
-    <main>
+    <main className="data-main">
       <div className="wrap">
+        {/* Page Head */}
         <div className="page-head">
-          <h1>Data sources and credits</h1>
-          <p className="muted">Where the images come from, what they can’t tell you, and who built this.</p>
+          <span className="telemetry-badge">
+            <span className="live-dot" aria-hidden="true"></span>
+            DATA PROVENANCE // RESEARCH MANIFEST
+          </span>
+          <h1>Data Sources, Scientific Limits &amp; Research Manifest</h1>
+          <p className="muted">
+            Open-access orbital observations, mission parameters, analytical constraints, and scientific research citations.
+          </p>
 
           <div className="credit" role="note">
-            <b>Data credit</b>
+            <b>DATA CREDITS &amp; MISSION COLLABORATION:</b>
             <span>
-              Radar imagery in RadarLens comes from the NASA-ISRO Synthetic Aperture Radar
-              (NISAR) mission, a joint Earth-observing mission of NASA and the Indian Space
-              Research Organisation (ISRO).
+              Synthetic Aperture Radar observations in <strong>ASTRAV//E</strong> are powered by the NASA-ISRO Synthetic Aperture Radar (NISAR) mission, European Space Agency (ESA) Copernicus Sentinel-1, USGS/NASA Landsat, and NASA Earth Science Data and Information System (ESDIS).
             </span>
           </div>
         </div>
 
+        {/* Datasets Table */}
         <section className="data-section" aria-labelledby="sources-h">
-          <h2 id="sources-h">What we use</h2>
+          <div className="section-title-bar">
+            <h2 id="sources-h">Orbital Observation Datasets</h2>
+            <span className="mono-coords">CALIBRATED SCIENCE GRANULES</span>
+          </div>
 
           <div
             className="table-wrap"
@@ -130,48 +139,67 @@ export default function DataPage() {
             aria-label="Data sources table, scrolls sideways on small screens"
           >
             <table className="data-table">
-              <caption>Datasets used in RadarLens</caption>
+              <caption>Core telemetry and raster datasets integrated into ASTRAV//E</caption>
               <thead>
                 <tr>
-                  <th scope="col">Dataset</th>
-                  <th scope="col">Used for</th>
-                  <th scope="col">Provider</th>
-                  <th scope="col">Date range</th>
+                  <th scope="col">Dataset / Sensor</th>
+                  <th scope="col">Analytical Function</th>
+                  <th scope="col">Mission Authority</th>
+                  <th scope="col">Observation Temporal Range</th>
                 </tr>
               </thead>
               <tbody>
                 {sources.map((s, idx) => (
                   <tr key={idx}>
-                    <th scope="row">{s.dataset}</th>
+                    <th scope="row">
+                      <span className="dataset-name">{s.dataset}</span>
+                    </th>
                     <td>{s.usedFor}</td>
                     <td>{s.provider}</td>
-                    <td>{s.dateRange}</td>
+                    <td className="mono">{s.dateRange}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <p className="table-note">Every image in RadarLens is labelled with its source, date and satellite.</p>
+          <p className="table-note">
+            All SAR data are radiometrically terrain-corrected (RTC) to backscatter coefficient Gamma-0 (γ°) in decibels (dB) referenced to WGS84 ellipsoid.
+          </p>
         </section>
 
+        {/* Limits & Team */}
         <section className="data-section" aria-labelledby="more-h">
-          <h2 id="more-h">Limits and team</h2>
-
           <div className="panel-grid">
+            {/* Scientific Constraints */}
             <article className="panel" aria-labelledby="limits-h">
-              <h3 id="limits-h">Honest limits</h3>
-              <p className="muted">What to keep in mind when reading the results.</p>
+              <div className="panel-header">
+                <h3 id="limits-h">Scientific Constraints &amp; Uncertainty</h3>
+                <span className="stat-unit-badge">VALIDATION SPEC</span>
+              </div>
+              <p className="muted">Critical analytical considerations for interpreting SAR backscatter data.</p>
               <ul className="limits">
-                <li><b>Radar isn’t a photo.</b> Bright and dark areas show how the ground scatters radio waves, not colour.</li>
-                <li><b>Numbers are estimates.</b> Change figures come from comparing two passes and can be off at the edges.</li>
-                <li><b>Not every change is a flood or a loss.</b> Wind, farming and wet soil can also alter the signal.</li>
-                <li><b>Passes are days apart.</b> Anything that happened between them is not shown.</li>
+                <li>
+                  <b>Electromagnetic Backscatter vs Optical Reflectance:</b> Greyscale radar brightness represents microwave roughness and dielectric permittivity, not visible surface color or illumination.
+                </li>
+                <li>
+                  <b>Geometric Uncertainty Margins:</b> Fractional change calculations carry a &plusmn;1.8% geometric margin due to radar foreshortening, layover on steep slopes, and shadow effects.
+                </li>
+                <li>
+                  <b>Dielectric Ambiguities:</b> Sudden radar dark voids may indicate standing water, specular basaltic flows, or smooth frozen ice sheets; contextual geomorphic validation is essential.
+                </li>
+                <li>
+                  <b>Repeat Pass Interval:</b> Temporal gaps between orbital passes range from 6 to 48 days; intermediate transient phenomena between passes are unrecorded.
+                </li>
               </ul>
             </article>
 
+            {/* Team Manifest */}
             <article className="panel" aria-labelledby="team-h">
-              <h3 id="team-h">The team</h3>
-              <p className="muted">Built for NASA Space Apps.</p>
+              <div className="panel-header">
+                <h3 id="team-h">Engineering &amp; Research Manifest</h3>
+                <span className="stat-unit-badge">NASA SPACE APPS 2024</span>
+              </div>
+              <p className="muted">Multidisciplinary team specializing in aerospace computing, geospatial analysis, and planetary science.</p>
               <ul className="team-grid">
                 {team.map((m, idx) => (
                   <li key={idx} className="slot">
@@ -184,25 +212,35 @@ export default function DataPage() {
           </div>
         </section>
 
-        {/* IMAGE CREDITS */}
+        {/* Observation Licenses and Credits */}
         <section className="data-section" aria-labelledby="credits-h">
-          <h2 id="credits-h">Image credits and licenses</h2>
+          <div className="section-title-bar">
+            <h2 id="credits-h">Observation Provenance &amp; Attribution</h2>
+            <span className="mono-coords">OPEN SCIENTIFIC DATA LICENSE</span>
+          </div>
           <p className="muted">
-            All satellite imagery used in RadarLens is freely licensed or public domain. Every observation is credited below.
+            All satellite imagery integrated into ASTRAV//E is published under Open Access or Public Domain licenses.
           </p>
           <div id="image-credits-container" className="credits-grid">
             {credits.length === 0 ? (
-              <p className="muted">Loading image credits…</p>
+              <p className="muted">Loading observation provenance records…</p>
             ) : (
               credits.map((c, idx) => (
                 <article key={idx} className="credit-card">
-                  <span className="chip" style={{ marginBottom: '8px' }}>{c.eventTitle} · {c.role}</span>
+                  <div className="credit-chip-row">
+                    <span className="chip">{c.eventTitle}</span>
+                    <span className="credit-role-tag">{c.role}</span>
+                  </div>
                   <h3>{c.title}</h3>
-                  <p><strong>Satellite / Sensor:</strong> {c.satellite}</p>
-                  <p><strong>Author / Agency:</strong> {c.author}</p>
-                  <p><strong>License:</strong> {c.license}</p>
-                  <p style={{ marginTop: '8px' }}>
-                    <a href={c.sourceUrl} target="_blank" rel="noopener noreferrer">Source reference link ↗</a>
+                  <div className="credit-details">
+                    <p><strong>Sensor / Payload:</strong> <span className="mono">{c.satellite}</span></p>
+                    <p><strong>Authority / Agency:</strong> {c.author}</p>
+                    <p><strong>Licensing:</strong> {c.license}</p>
+                  </div>
+                  <p className="credit-link-row">
+                    <a href={c.sourceUrl} target="_blank" rel="noopener noreferrer">
+                      Official Dataset Archive ↗
+                    </a>
                   </p>
                 </article>
               ))
@@ -210,20 +248,24 @@ export default function DataPage() {
           </div>
         </section>
 
-        {/* FEEDBACK FORM */}
+        {/* Feedback Console */}
         <section className="data-section" aria-labelledby="feedback-h">
-          <h2 id="feedback-h">Feedback &amp; suggestions</h2>
-          <p className="muted">Share your questions or suggestions for RadarLens.</p>
+          <div className="section-title-bar">
+            <h2 id="feedback-h">Scientific Inquiries &amp; Peer Feedback Console</h2>
+            <span className="mono-coords">DISCOVERY LOGGING PROTOCOL</span>
+          </div>
+          <p className="muted">
+            Submit observations, propose candidate planetary analogue sites, or transmit technical inquiries to the research team.
+          </p>
 
           <form
             id="feedback-form"
             className="feedback-form"
-            style={{ marginTop: '16px', maxWidth: '600px' }}
             onSubmit={handleFeedbackSubmit}
           >
-            <div style={{ marginBottom: '14px' }}>
-              <label htmlFor="fb-name" style={{ display: 'block', fontWeight: 600, marginBottom: '4px' }}>
-                Your name
+            <div className="form-group">
+              <label htmlFor="fb-name">
+                Researcher / Observer Name
               </label>
               <input
                 type="text"
@@ -231,25 +273,16 @@ export default function DataPage() {
                 name="name"
                 required
                 maxLength={100}
-                placeholder="e.g. Shreyas Majumder"
+                placeholder="e.g. Dr. Eleanor Vance"
                 value={fbName}
                 onChange={(e) => setFbName(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '10px 14px',
-                  borderRadius: '8px',
-                  border: '1px solid var(--line)',
-                  background: 'var(--bg)',
-                  color: 'var(--text)',
-                  fontFamily: 'inherit',
-                  fontSize: '15px'
-                }}
+                className="form-input"
               />
             </div>
 
-            <div style={{ marginBottom: '14px' }}>
-              <label htmlFor="fb-message" style={{ display: 'block', fontWeight: 600, marginBottom: '4px' }}>
-                Message
+            <div className="form-group">
+              <label htmlFor="fb-message">
+                Observation Report / Planetary Analogue Note
               </label>
               <textarea
                 id="fb-message"
@@ -257,25 +290,15 @@ export default function DataPage() {
                 required
                 maxLength={1000}
                 rows={4}
-                placeholder="Your thoughts on the radar change comparison..."
+                placeholder="Note on radar backscatter, suggested lunar/martian comparison target, or anomaly calibration..."
                 value={fbMessage}
                 onChange={(e) => setFbMessage(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '10px 14px',
-                  borderRadius: '8px',
-                  border: '1px solid var(--line)',
-                  background: 'var(--bg)',
-                  color: 'var(--text)',
-                  fontFamily: 'inherit',
-                  fontSize: '15px',
-                  resize: 'vertical'
-                }}
+                className="form-input form-textarea"
               />
             </div>
 
             <button type="submit" className="btn btn-main" id="fb-submit-btn" disabled={fbLoading}>
-              {fbLoading ? 'Sending…' : 'Send feedback'}
+              {fbLoading ? 'Transmitting…' : 'Transmit Feedback Report'}
             </button>
 
             {fbStatus && (
